@@ -133,7 +133,7 @@ QUILL_NODISCARD QUILL_ATTRIBUTE_COLD std::shared_ptr<Handler> stderr_handler(
  * @return A pointer to a new or existing handler
  */
 template <typename THandler, typename... Args>
-QUILL_NODISCARD QUILL_ATTRIBUTE_COLD std::shared_ptr<Handler> create_handler(std::string const& handler_name,
+QUILL_NODISCARD QUILL_ATTRIBUTE_COLD std::shared_ptr<Handler> create_handler(std::wstring const& handler_name,
                                                                              Args&&... args)
 {
   return detail::LogManagerSingleton::instance().log_manager().handler_collection().create_handler<THandler>(

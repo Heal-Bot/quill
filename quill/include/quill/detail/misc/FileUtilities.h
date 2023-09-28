@@ -63,7 +63,7 @@ bool rename_file(fs::path const& previous_file, fs::path const& new_file) noexce
  * @param filename the name of the file
  * @return first filename, second extension
  */
-QUILL_NODISCARD QUILL_ATTRIBUTE_COLD std::pair<std::string, std::string> extract_stem_and_extension(
+QUILL_NODISCARD QUILL_ATTRIBUTE_COLD std::pair<std::wstring, std::wstring> extract_stem_and_extension(
   fs::path const& filename) noexcept;
 
 /**

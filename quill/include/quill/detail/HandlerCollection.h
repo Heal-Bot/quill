@@ -51,17 +51,17 @@ public:
    */
 
   QUILL_NODISCARD QUILL_ATTRIBUTE_COLD std::shared_ptr<Handler> stdout_console_handler(
-    std::string const& stdout_handler_name = std::string{"stdout"},
+      std::wstring const& stdout_handler_name = s2ws(std::string{"stdout"}),
     ConsoleColours const& console_colours = ConsoleColours{});
 
   QUILL_NODISCARD QUILL_ATTRIBUTE_COLD std::shared_ptr<Handler> stderr_console_handler(
-    std::string const& stderr_handler_name = std::string{"stderr"});
+      std::wstring const& stderr_handler_name = s2ws(std::string{"stderr"}));
 
   /**
    * Create a handler
    */
   template <typename THandler, typename... Args>
-  QUILL_NODISCARD QUILL_ATTRIBUTE_COLD std::shared_ptr<Handler> create_handler(std::string const& handler_name,
+  QUILL_NODISCARD QUILL_ATTRIBUTE_COLD std::shared_ptr<Handler> create_handler(std::wstring const& handler_name,
                                                                                Args&&... args)
   {
     // Protect shared access
@@ -116,7 +116,7 @@ public:
    * @throws std::runtime_error if the handler does not exist
    * @return a shared_ptr to the handler
    */
-  QUILL_NODISCARD QUILL_ATTRIBUTE_COLD std::shared_ptr<Handler> get_handler(std::string const& handler_name);
+  QUILL_NODISCARD QUILL_ATTRIBUTE_COLD std::shared_ptr<Handler> get_handler(std::wstring const& handler_name);
 
   /**
    * Subscribe a handler to the vector of active handlers so that the backend thread can see it
@@ -145,7 +145,7 @@ public:
   // list Check if no other logger is using it first
 
 private:
-  QUILL_NODISCARD std::shared_ptr<Handler> _create_console_handler(std::string const& stream, FILE* file,
+  QUILL_NODISCARD std::shared_ptr<Handler> _create_console_handler(std::wstring const& stream, FILE* file,
                                                                    ConsoleColours const& console_colours);
 
 private:
@@ -161,7 +161,7 @@ private:
    * For Streamhandlers the name is the filename, they are stored per unique filename so
    * that we don't open_file the same file twice
    */
-  std::unordered_map<std::string, std::weak_ptr<Handler>> _handler_collection;
+  std::unordered_map<std::wstring, std::weak_ptr<Handler>> _handler_collection;
 
   /** Use to lock both _active_handlers_collection and _file_handler_collection, mutable to have an active_handlers() const function */
   mutable std::mutex _mutex;

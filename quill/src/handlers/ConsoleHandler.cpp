@@ -164,7 +164,7 @@ void ConsoleColours::_set_can_use_colours(FILE* file) noexcept
 #endif
 
 /***/
-ConsoleHandler::ConsoleHandler(std::string stream, FILE* file, ConsoleColours const& console_colours)
+ConsoleHandler::ConsoleHandler(std::wstring stream, FILE* file, ConsoleColours const& console_colours)
   : StreamHandler{std::move(stream), file}, _console_colours(console_colours)
 {
   // In this ctor we take a full copy of console_colours and in our instance we modify it

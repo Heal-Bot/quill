@@ -28,13 +28,13 @@ QUILL_ATTRIBUTE_COLD void configure(Config const& config)
 }
 
 /***/
-std::shared_ptr<Handler> stdout_handler(std::string const& stdout_handler_name /* = "stdout" */,
+std::shared_ptr<Handler> stdout_handler(std::wstring const& stdout_handler_name /* = "stdout" */,
                                         ConsoleColours const& console_colours /* = ConsoleColours {} */)
 {
   if (console_colours.using_colours())
   {
     // if we are using colours then expect a different name from the default "stdout"
-    if (stdout_handler_name == std::string{"stdout"})
+    if (stdout_handler_name == detail::s2ws(std::string{"stdout"}))
     {
       QUILL_THROW(
         QuillError{"When using colours a different handler name than 'stdout' needs to be used"});
@@ -46,14 +46,14 @@ std::shared_ptr<Handler> stdout_handler(std::string const& stdout_handler_name /
 }
 
 /***/
-std::shared_ptr<Handler> stderr_handler(std::string const& stderr_handler_name /* = "stderr" */)
+std::shared_ptr<Handler> stderr_handler(std::wstring const& stderr_handler_name /* = "stderr" */)
 {
   return detail::LogManagerSingleton::instance().log_manager().handler_collection().stderr_console_handler(
     stderr_handler_name);
 }
 
 /***/
-std::shared_ptr<Handler> get_handler(std::string const& handler_name)
+std::shared_ptr<Handler> get_handler(std::wstring const& handler_name)
 {
   return detail::LogManagerSingleton::instance().log_manager().handler_collection().get_handler(handler_name);
 }
@@ -62,7 +62,7 @@ std::shared_ptr<Handler> get_handler(std::string const& handler_name)
 std::shared_ptr<Handler> file_handler(fs::path const& filename, FileHandlerConfig const& config, /* = FileHandlerConfig{} */
                                       FileEventNotifier file_event_notifier /* = FileEventNotifier{} */)
 {
-  return create_handler<FileHandler>(filename.string(), config, std::move(file_event_notifier));
+  return create_handler<FileHandler>(filename.wstring(), config, std::move(file_event_notifier));
 }
 
 /***/
@@ -70,18 +70,18 @@ std::shared_ptr<Handler> rotating_file_handler(fs::path const& base_filename,
                                                RotatingFileHandlerConfig const& config, /* = RotatingFileHandlerConfig{} */
                                                FileEventNotifier file_event_notifier /* = FileEventNotifier{} */)
 {
-  return create_handler<RotatingFileHandler>(base_filename.string(), config, std::move(file_event_notifier));
+  return create_handler<RotatingFileHandler>(base_filename.wstring(), config, std::move(file_event_notifier));
 }
 
 /***/
 std::shared_ptr<Handler> json_file_handler(fs::path const& filename, JsonFileHandlerConfig const& config, /* = JsonFileHandlerConfig{} */
                                            FileEventNotifier file_event_notifier /* = FileEventNotifier{} */)
 {
-  return create_handler<JsonFileHandler>(filename.string(), config, std::move(file_event_notifier));
+  return create_handler<JsonFileHandler>(filename.wstring(), config, std::move(file_event_notifier));
 }
 
 /***/
-std::shared_ptr<Handler> null_handler() { return create_handler<NullHandler>("nullhandler"); }
+std::shared_ptr<Handler> null_handler() { return create_handler<NullHandler>(detail::s2ws(std::string("nullhandler"))); }
 
 /***/
 Logger* get_logger(char const* logger_name /* = nullptr */)

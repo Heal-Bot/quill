@@ -2,12 +2,14 @@
 #include "quill/QuillError.h" // for QUILL_THROW, QuillError
 #include "quill/detail/misc/Common.h" // for QUILL_UNLIKELY
 #include "quill/detail/misc/Os.h"     // for fsize, localtime_rs, remove_file
+#include "quill/detail/misc/Utilities.h"
 #include <cerrno>                     // for errno
 #include <cstring>
 #include <ctime> // for time_t
 #include <iomanip>
 #include <iostream> // for cerr
 #include <sstream>  // for operator<<, basic_ostream, bas...
+#include <string>
 
 namespace quill::detail
 {
@@ -28,7 +30,7 @@ void fwrite_fully(void const* ptr, size_t size, size_t count, FILE* stream)
 /***/
 FILE* open_file(fs::path const& filename, std::string const& mode)
 {
-  FILE* fp = ::fopen(filename.string().data(), mode.data());
+  FILE* fp = ::_wfopen(filename.wstring().c_str(), s2ws(mode.data()).c_str());
 
   if (!fp)
   {
@@ -75,10 +77,10 @@ bool rename_file(fs::path const& previous_file, fs::path const& new_file) noexce
 }
 
 /***/
-std::pair<std::string, std::string> extract_stem_and_extension(fs::path const& filename) noexcept
+std::pair<std::wstring, std::wstring> extract_stem_and_extension(fs::path const& filename) noexcept
 {
   // filename and extension
-  return std::make_pair((filename.parent_path() / filename.stem()).string(), filename.extension().string());
+  return std::make_pair((filename.parent_path() / filename.stem()).wstring(), filename.extension().wstring());
 }
 
 /***/
@@ -87,7 +89,7 @@ fs::path append_date_time_to_filename(fs::path const& filename, bool with_time, 
                                       std::chrono::system_clock::time_point timestamp /* = {} */) noexcept
 {
   // Get base file and extension
-  std::pair<std::string, std::string> const stem_ext = quill::detail::extract_stem_and_extension(filename);
+  std::pair<std::wstring, std::wstring> const stem_ext = quill::detail::extract_stem_and_extension(filename);
 
   // Get the time now as tm from user or default to now
   std::chrono::system_clock::time_point const ts_now =
@@ -97,9 +99,11 @@ fs::path append_date_time_to_filename(fs::path const& filename, bool with_time, 
     std::chrono::duration_cast<std::chrono::nanoseconds>(ts_now.time_since_epoch()).count());
 
   // Construct a filename
-  return fmtquill::format("{}_{}{}", stem_ext.first,
-                          quill::detail::get_datetime_string(timestamp_ns, timezone, with_time),
-                          stem_ext.second);
+  std::wstring output = stem_ext.first;
+  output.append(s2ws("_"));
+  output.append(s2ws(quill::detail::get_datetime_string(timestamp_ns, timezone, with_time)));
+  output.append(stem_ext.second);
+  return output;
 }
 
 std::string get_datetime_string(uint64_t timestamp_ns, Timezone timezone, bool with_time)
@@ -143,12 +147,15 @@ fs::path append_index_to_filename(fs::path const& filename, uint32_t index) noex
   }
 
   // Get base file and extension
-  std::pair<std::string, std::string> const stem_ext = detail::extract_stem_and_extension(filename);
+  std::pair<std::wstring, std::wstring> const stem_ext = detail::extract_stem_and_extension(filename);
 
   // Construct a filename
-  std::stringstream ss;
-  ss << stem_ext.first << "." << index << stem_ext.second;
-  return ss.str();
+  std::wstring output = stem_ext.first;
+  output.append(s2ws("."));
+  output.append(std::to_wstring(index));
+  output.append(stem_ext.second);
+
+  return output;
 }
 
 /***/
@@ -160,12 +167,14 @@ fs::path append_string_to_filename(fs::path const& filename, std::string const& 
   }
 
   // Get base file and extension
-  std::pair<std::string, std::string> const stem_ext = detail::extract_stem_and_extension(filename);
+  std::pair<std::wstring, std::wstring> const stem_ext = detail::extract_stem_and_extension(filename);
 
   // Construct a filename
-  std::stringstream ss;
-  ss << stem_ext.first << "." << text << stem_ext.second;
-  return ss.str();
+  std::wstring output = stem_ext.first;
+  output.append(s2ws("."));
+  output.append(s2ws(text));
+  output.append(stem_ext.second);
+  return output;
 }
 
 } // namespace quill::detail

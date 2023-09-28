@@ -9,21 +9,21 @@
 namespace quill::detail
 {
 /***/
-std::shared_ptr<Handler> HandlerCollection::stdout_console_handler(std::string const& stdout_handler_name /* = std::string{"stdout"} */,
+std::shared_ptr<Handler> HandlerCollection::stdout_console_handler(std::wstring const& stdout_handler_name /* = std::string{"stdout"} */,
                                                                    ConsoleColours const& console_colours /* = ConsoleColours{} */)
 {
   return _create_console_handler(stdout_handler_name, stdout, console_colours);
 }
 
 /***/
-std::shared_ptr<Handler> HandlerCollection::stderr_console_handler(std::string const& stderr_handler_name /* = std::string{"stderr"} */)
+std::shared_ptr<Handler> HandlerCollection::stderr_console_handler(std::wstring const& stderr_handler_name /* = std::string{"stderr"} */)
 {
   // we just pass an empty ConsoleColours class, as we don't use colours for stderr.
   return _create_console_handler(stderr_handler_name, stderr, quill::ConsoleColours{});
 }
 
 /***/
-std::shared_ptr<Handler> HandlerCollection::get_handler(std::string const& handler_name)
+std::shared_ptr<Handler> HandlerCollection::get_handler(std::wstring const& handler_name)
 {
   // Protect shared access
   std::lock_guard<std::mutex> const lock{_mutex};
@@ -33,7 +33,7 @@ std::shared_ptr<Handler> HandlerCollection::get_handler(std::string const& handl
 
   if (search == _handler_collection.cend())
   {
-    QUILL_THROW(QuillError{"Handler with name " + handler_name + " does not exist"});
+    //QUILL_THROW(QuillError{"Handler with name " + handler_name + " does not exist"});
   }
 
   std::shared_ptr<Handler> handler = search->second.lock();
@@ -106,7 +106,7 @@ void HandlerCollection::remove_unused_handlers()
 }
 
 /***/
-std::shared_ptr<Handler> HandlerCollection::_create_console_handler(std::string const& stream, FILE* file,
+std::shared_ptr<Handler> HandlerCollection::_create_console_handler(std::wstring const& stream, FILE* file,
                                                                     ConsoleColours const& console_colours)
 {
   // Protect shared access

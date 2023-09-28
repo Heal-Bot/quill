@@ -153,7 +153,7 @@ void LoggerCollection::enable_console_colours() noexcept
 {
   // Get the previous created default stdout handler
   std::shared_ptr<Handler> stdout_stream_handler =
-    _handler_collection.stdout_console_handler("stdout");
+      _handler_collection.stdout_console_handler(s2ws("stdout"));
   assert(stdout_stream_handler && "stdout_stream_handler can not be nullptr");
 
   auto console_handler = reinterpret_cast<ConsoleHandler*>(stdout_stream_handler.get());
@@ -175,7 +175,7 @@ void LoggerCollection::create_root_logger()
     {
       // Add the default console handler to the root logger
       std::shared_ptr<Handler> stdout_stream_handler =
-        _handler_collection.stdout_console_handler("stdout");
+          _handler_collection.stdout_console_handler(s2ws("stdout"));
 
       if (_config.enable_console_colours)
       {
@@ -202,7 +202,7 @@ void LoggerCollection::create_root_logger()
     {
       // Add the default console handler to the root logger
       std::shared_ptr<Handler> stdout_stream_handler =
-        _handler_collection.stdout_console_handler("stdout");
+          _handler_collection.stdout_console_handler(s2ws("stdout"));
 
       if (_config.enable_console_colours)
       {
